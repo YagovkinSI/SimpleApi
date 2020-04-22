@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>SimpleApiWebClinet</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Все сообщения:</h2>
+    <a href="#" title="Обновить" class="btn btn-primary" onclick="window.location.reload();">Обновить (F5)</a>
+    <table class="table table-condensed table-striped  col-md-6">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Сообщение</th>
+                <th>IP отправителя</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script>
+
+        function getDateFormat(date) {
+            var options = {                
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timezone: 'UTC',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            };
+            var formatDate = date.toLocaleString("ru", options);
+            return formatDate;
+        }
+
+        function row(note) {
+ 
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", note.id);
+
+            var date = new Date(Date.parse(note.date));  
+            const dateTd = document.createElement("td");
+            dateTd.append(getDateFormat(date));
+            tr.append(dateTd);
+ 
+            const messageTd = document.createElement("td");
+            messageTd.append(note.message);
+            tr.append(messageTd);
+ 
+            const ipTd = document.createElement("td");
+            ipTd.append(note.ipAdress);
+            tr.append(ipTd);
+ 
+            return tr;
+        }
+
+        async function GetNotes() {
+            const response = await fetch("api/notes", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const notes = await response.json();
+                let rows = document.querySelector("tbody"); 
+                notes.forEach(note => {
+                    // добавляем полученные элементы в таблицу
+                    rows.append(row(note));
+                });
+            }
+        }
+
+        GetNotes();
+    </script>
+</body>
+</html>
