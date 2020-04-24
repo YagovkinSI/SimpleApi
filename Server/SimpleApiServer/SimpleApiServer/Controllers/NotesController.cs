@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimpleApiServer.Models;
-using SimpleApiServer.ViewModels;
+using SimpleApiServer.ResponseModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace SimpleApiServer.Controllers
@@ -37,19 +37,22 @@ namespace SimpleApiServer.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Note>>> Get()
         {
-            return await _dbContext.Notes.ToListAsync();
+            //доступ к списку имеется только с IP сервера
+            return HttpContext.Connection.RemoteIpAddress.Equals(HttpContext.Connection.LocalIpAddress)
+                ? await _dbContext.Notes.ToListAsync()
+                : null;
         }
 
-        // POST api/notes
+        //POST api/notes
         [HttpPost]
-        public async Task<ActionResult<ResponseToAddMessage>> Post(Note note)
+        public async Task<ActionResult<ResponseNotePost>> Post(Note note)
         {
             var ip = HttpContext.Connection.RemoteIpAddress.ToString();
 
             if (note.Message == null)
             {
-                var result = new ResponseToAddMessage(note.Message, ip, DateTime.Now, "Message is null"); ;
-                return new ActionResult<ResponseToAddMessage>(result);
+                var result = new ResponseNotePost(note.Message, ip, DateTime.Now, "Message is null"); ;
+                return new ActionResult<ResponseNotePost>(result);
             }
 
             note.IpAdress = ip;
@@ -59,13 +62,13 @@ namespace SimpleApiServer.Controllers
             {
                 _dbContext.Notes.Add(note);
                 await _dbContext.SaveChangesAsync();
-                var result = new ResponseToAddMessage(note);                
-                return new ActionResult<ResponseToAddMessage>(result);
+                var result = new ResponseNotePost(note);
+                return new ActionResult<ResponseNotePost>(result);
             }
             catch (Exception ex)
             {
-                var result = new ResponseToAddMessage(note.Message, ip, DateTime.Now, $"Datebase error: {ex.Message}");
-                return new ActionResult<ResponseToAddMessage>(result);
+                var result = new ResponseNotePost(note.Message, ip, DateTime.Now, $"Datebase error: {ex.Message}");
+                return new ActionResult<ResponseNotePost>(result);
             }
         }
     }

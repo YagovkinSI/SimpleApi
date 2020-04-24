@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleApiServer.ViewModels
+namespace SimpleApiServer.ResponseModels
 {
-    public class ResponseToAddMessage
+    public class ResponseNotePost
     {
         public bool Success { get; set; }
         public string Error { get; set; }
@@ -14,7 +14,7 @@ namespace SimpleApiServer.ViewModels
         public string SenderIp { get; set; }
         public DateTime Date { get; set; }
 
-        public ResponseToAddMessage(string message, string senderIp, DateTime date, string error = null)
+        public ResponseNotePost(string message, string senderIp, DateTime date, string error = null)
         {
             Message = message;
             SenderIp = senderIp;
@@ -23,13 +23,9 @@ namespace SimpleApiServer.ViewModels
             Success = error == null;
         }
 
-        public ResponseToAddMessage(Note note)
+        public ResponseNotePost(Note note, string error = null)
+                : this (note.Message, note.IpAdress, note.Date, error)
         {
-            Message = note.Message;
-            SenderIp = note.IpAdress;
-            Date = note.Date;
-            Error = "";
-            Success = true;
         }
     }
 }
