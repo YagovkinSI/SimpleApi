@@ -1,4 +1,5 @@
-﻿using SimpleApi.WpfClient.Host;
+﻿using SimpleApi.WpfClient.DAL;
+using SimpleApi.WpfClient.Host;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,6 @@ namespace SimpleApi.WpfClient
         public MainWindow()
         {
             InitializeComponent();
-
         }
 
         private async void onHostCheckClick(object sender, RoutedEventArgs e)
@@ -39,7 +39,13 @@ namespace SimpleApi.WpfClient
         private async void onSendClick(object sender, RoutedEventArgs e)
         {
             var message = tbMessage.Text;
+                        
+            var noteId = await DbHelper.AddNote(message);
+            if (!noteId.HasValue)
+                return;
+
             (bool success, string response) = await HostHelper.SendMessage(message);
+            DbHelper.AddSending(noteId.Value, success, response);
             tbLog.Text += response + Environment.NewLine;
         }
     }
