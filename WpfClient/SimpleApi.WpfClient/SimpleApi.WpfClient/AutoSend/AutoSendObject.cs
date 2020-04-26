@@ -1,4 +1,5 @@
 ﻿using SimpleApi.WpfClient.DAL.Models;
+using SimpleApi.WpfClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,13 @@ namespace SimpleApi.WpfClient.AutoSend
     public class AutoSendObject
     {
         public Dispatcher Dispatcher;
-        public TextBlock TbLog;
+        public ILogService LogService;
         public List<Note> NotSendedNotes;
 
-        public AutoSendObject(Dispatcher dispatcher, TextBlock tbLog)
+        public AutoSendObject(Dispatcher dispatcher, ILogService logService)
         {
             Dispatcher = dispatcher;
-            TbLog = tbLog;
+            LogService = logService;
             NotSendedNotes = new List<Note>();
         }
     }

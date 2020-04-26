@@ -18,7 +18,7 @@
         </Grid>
         <ScrollViewer x:Name="logForm" Margin="20,220,20,20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <TextBlock x:Name="tbLog" Background="AntiqueWhite" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <RichTextBox x:Name="tbLog" Background="AntiqueWhite" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </ScrollViewer>
     </Grid>
 </Window>

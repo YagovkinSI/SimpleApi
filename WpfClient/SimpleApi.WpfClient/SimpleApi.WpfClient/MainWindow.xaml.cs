@@ -1,7 +1,9 @@
 ﻿using SimpleApi.WpfClient.AutoSend;
 using SimpleApi.WpfClient.BLL;
 using SimpleApi.WpfClient.DAL;
+using SimpleApi.WpfClient.Enums;
 using SimpleApi.WpfClient.Host;
+using SimpleApi.WpfClient.Logger;
 using SimpleApi.WpfClient.Services;
 using SimpleApi.WpfClient.Services.Interfaces;
 using System;
@@ -32,6 +34,7 @@ namespace SimpleApi.WpfClient
         private IConnectionService connectionService;
         private IAutoSendService autoSendService;
         private IMainAppService mainAppService;
+        private ILogService logService;
 
         public MainWindow()
         {
@@ -52,10 +55,13 @@ namespace SimpleApi.WpfClient
 
             autoSendService = new AutoSendService();
             ServiceManager.SetService(autoSendService);
-            autoSendService.Init(Dispatcher, tbLog);
+            autoSendService.Init(Dispatcher);
 
             mainAppService = new MainAppService();
             ServiceManager.SetService(mainAppService);
+
+            logService = new LogService(tbLog);
+            ServiceManager.SetService(logService);
         }
 
 
@@ -74,9 +80,9 @@ namespace SimpleApi.WpfClient
         {
             var message = tbMessage.Text;
 
-            var response = await mainAppService.SendMessageAsync(message);
+            (var success, var response) = await mainAppService.SendMessageAsync(message);
 
-            tbLog.Text += response + Environment.NewLine;
+            logService.AddLog(response, enLogType.Message);
         }
     }
 }

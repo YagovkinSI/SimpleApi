@@ -1,4 +1,5 @@
 ﻿using SimpleApi.WpfClient.DAL.Models;
+using SimpleApi.WpfClient.Enums;
 using SimpleApi.WpfClient.Services;
 using SimpleApi.WpfClient.Services.Interfaces;
 using System;
@@ -27,9 +28,10 @@ namespace SimpleApi.WpfClient.AutoSend
             databaseService = ServiceManager.GetService<IDatabaseService>();
         }
 
-        public void Init(Dispatcher dispatcher, TextBlock tbLog)
+        public void Init(Dispatcher dispatcher)
         {
-            autoSendObject = new AutoSendObject(dispatcher, tbLog);
+            var logService = ServiceManager.GetService<ILogService>();
+            autoSendObject = new AutoSendObject(dispatcher, logService);
             
         }
 
@@ -65,16 +67,18 @@ namespace SimpleApi.WpfClient.AutoSend
                         return;
                 }
                 if (count > 0 && autoSendObject.NotSendedNotes.Count > 0)
-                    autoSendObject.Dispatcher.Invoke(() => { autoSendObject.TbLog.Text +=
-                        $"Часть ранее неотправленных сообщений успешно переданы на сервер.\r\nКоличество таких сообщений - {count}.\r\nОсталоне не передано - {autoSendObject.NotSendedNotes.Count}" + Environment.NewLine; });
+                    autoSendObject.Dispatcher.Invoke(() => { autoSendObject.LogService.AddLog(
+                        $"Часть ранее неотправленных сообщений успешно переданы на сервер.\r\nКоличество таких сообщений " +
+                        $"- {count}.\r\nОсталоне не передано - {autoSendObject.NotSendedNotes.Count}", enLogType.Attantion);
+                    });
 
                 Thread.Sleep(10000);
 
                 if (autoSendObject.NotSendedNotes.Count == 0)
                 {
                     autoSendObject.Dispatcher.Invoke(() => {
-                        autoSendObject.TbLog.Text +=
-                            $"Все ранее неотправленные сообщения успешно переданы на сервер." + Environment.NewLine;
+                        autoSendObject.LogService.AddLog(
+                            $"Все ранее неотправленные сообщения успешно переданы на сервер.", enLogType.Attantion);
                     });
                     isAutoSendOn = false;
                 }

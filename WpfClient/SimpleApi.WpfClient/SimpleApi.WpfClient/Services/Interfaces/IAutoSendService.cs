@@ -12,7 +12,7 @@ namespace SimpleApi.WpfClient.Services.Interfaces
 {
     public interface IAutoSendService : IAppService
     {
-        void Init(Dispatcher dispatcher, TextBlock tbLog);
+        void Init(Dispatcher dispatcher);
         void TrySendNotes(params Note[] newNotSendedNotes);
         Task Run(Task<Note[]> newNotSendedNotes);
     }

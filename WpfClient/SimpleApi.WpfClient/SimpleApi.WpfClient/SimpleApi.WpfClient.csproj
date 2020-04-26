@@ -156,10 +156,14 @@
     </ApplicationDefinition>
     <Compile Include="AutoSend\AutoSendObject.cs" />
     <Compile Include="BLL\MainAppService.cs" />
+    <Compile Include="Enums\enLogType.cs" />
+    <Compile Include="Logger\LogElement.cs" />
+    <Compile Include="Logger\LogService.cs" />
     <Compile Include="Services\Interfaces\IAutoSendService.cs" />
     <Compile Include="Services\Interfaces\IDatabaseService.cs" />
     <Compile Include="Services\Interfaces\IConnectionService.cs" />
     <Compile Include="Services\IAppService.cs" />
+    <Compile Include="Services\Interfaces\ILogService.cs" />
     <Compile Include="Services\Interfaces\IMainAppService.cs" />
     <Compile Include="Services\ServiceManager.cs" />
     <Page Include="MainWindow.xaml">
