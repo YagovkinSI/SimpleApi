@@ -1,9 +1,11 @@
-﻿using SimpleApi.WpfClient.DAL;
+﻿using SimpleApi.WpfClient.AutoSend;
+using SimpleApi.WpfClient.DAL;
 using SimpleApi.WpfClient.Host;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace SimpleApi.WpfClient
 {
@@ -25,7 +28,10 @@ namespace SimpleApi.WpfClient
         public MainWindow()
         {
             InitializeComponent();
+
+            AutoSendHelper.Run(new AutoSendObject(this.Dispatcher, tbLog));
         }
+
 
         private async void onHostCheckClick(object sender, RoutedEventArgs e)
         {

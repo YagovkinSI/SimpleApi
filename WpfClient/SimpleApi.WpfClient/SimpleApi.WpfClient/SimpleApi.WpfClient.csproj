@@ -162,6 +162,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AutoSend\AutoSendHelper.cs" />
     <Compile Include="DAL\DbHelper.cs" />
     <Compile Include="DAL\Models\AppDbContext.cs" />
     <Compile Include="DAL\Models\Note.cs" />
