@@ -1,6 +1,8 @@
 ﻿using SimpleApi.WpfClient.AutoSend;
 using SimpleApi.WpfClient.DAL;
 using SimpleApi.WpfClient.Host;
+using SimpleApi.WpfClient.Services;
+using SimpleApi.WpfClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +27,23 @@ namespace SimpleApi.WpfClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        IDatabaseService databaseService = new DatabaseService();
+        IConnectionService connectionService = new ConnectionService();
+        IAutoSendService autoSendService = new AutoSendService();
+
         public MainWindow()
         {
             InitializeComponent();
 
-            AutoSendHelper.Run(new AutoSendObject(this.Dispatcher, tbLog));
+            Generateservices();
+
+            autoSendService.Run(new AutoSendObject(this.Dispatcher, tbLog));
+        }
+        private void Generateservices()
+        {
+            ServiceManager.SetService(databaseService);
+            ServiceManager.SetService(connectionService);
+            ServiceManager.SetService(connectionService);
         }
 
 
@@ -37,7 +51,7 @@ namespace SimpleApi.WpfClient
         {
             lHostConnect.Foreground = Brushes.Black;
             lHostConnect.Content = "Проверка соединения...";
-            var ping = await HostHelper.PingHost();
+            var ping = await connectionService.PingHost();
             lHostConnect.Content = ping ? "Соединение установлено" : "Нет соединения";
             lHostConnect.Foreground = ping ? Brushes.Green : Brushes.Red;
         }
@@ -45,13 +59,13 @@ namespace SimpleApi.WpfClient
         private async void onSendClick(object sender, RoutedEventArgs e)
         {
             var message = tbMessage.Text;
-                        
-            var noteId = await DbHelper.AddNote(message);
+
+            var noteId = await databaseService.AddNote(message);
             if (!noteId.HasValue)
                 return;
 
-            (bool success, string response) = await HostHelper.SendMessage(message);
-            DbHelper.AddSending(noteId.Value, success, response);
+            (bool success, string response) = await connectionService.SendMessage(message);
+            databaseService.AddSending(noteId.Value, success, response);
             tbLog.Text += response + Environment.NewLine;
         }
     }

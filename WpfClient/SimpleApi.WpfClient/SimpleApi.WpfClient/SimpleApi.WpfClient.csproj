@@ -154,6 +154,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoSend\AutoSendObject.cs" />
+    <Compile Include="Services\Interfaces\IAutoSendService.cs" />
+    <Compile Include="Services\Interfaces\IDatabaseService.cs" />
+    <Compile Include="Services\Interfaces\IConnectionService.cs" />
+    <Compile Include="Services\IAppService.cs" />
+    <Compile Include="Services\ServiceManager.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -162,12 +168,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AutoSend\AutoSendHelper.cs" />
-    <Compile Include="DAL\DbHelper.cs" />
+    <Compile Include="AutoSend\AutoSendService.cs" />
+    <Compile Include="DAL\DatabaseService.cs" />
     <Compile Include="DAL\Models\AppDbContext.cs" />
     <Compile Include="DAL\Models\Note.cs" />
     <Compile Include="DAL\Models\Sending.cs" />
-    <Compile Include="Host\HostHelper.cs" />
+    <Compile Include="Host\ConnectionService.cs" />
     <Compile Include="Host\ResponseModels\NoteResponsePost.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

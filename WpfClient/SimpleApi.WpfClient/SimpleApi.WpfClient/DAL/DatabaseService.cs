@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleApi.WpfClient.DAL.Models;
+using SimpleApi.WpfClient.Services;
+using SimpleApi.WpfClient.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +11,10 @@ using System.Windows;
 
 namespace SimpleApi.WpfClient.DAL
 {
-    public static class DbHelper
+    public class DatabaseService : IDatabaseService
     {     
-        private static AppDbContext _dbContext;
-        private static AppDbContext DbContext
+        private AppDbContext _dbContext;
+        private AppDbContext DbContext
         {
             get
             {
@@ -24,7 +26,7 @@ namespace SimpleApi.WpfClient.DAL
             }
         } 
 
-        public static async Task<long?> AddNote(string message)
+        public async Task<long?> AddNote(string message)
         {
             var note = new Note 
             { 
@@ -45,8 +47,7 @@ namespace SimpleApi.WpfClient.DAL
                 return null;
             }
         }
-
-        internal static async void AddSending(long noteId, bool success, string response)
+        public async void AddSending(long noteId, bool success, string response)
         {    
             try
             {
@@ -66,5 +67,6 @@ namespace SimpleApi.WpfClient.DAL
                     "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
     }
 }

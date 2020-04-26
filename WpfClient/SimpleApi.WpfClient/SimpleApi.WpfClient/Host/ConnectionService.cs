@@ -7,16 +7,17 @@ using System.Net.NetworkInformation;
 using System.Net.Http;
 using SimpleApi.WpfClient.Host.ResponseModels;
 using Newtonsoft.Json;
+using SimpleApi.WpfClient.Services.Interfaces;
 
 namespace SimpleApi.WpfClient.Host
 {
-    public static class HostHelper
+    public class ConnectionService : IConnectionService
     {
         public const string HOST_IP = "localhost";
         public const int HOST_PORT = 44304;
-        public static string APP_PATH => $"https://{HOST_IP}:{HOST_PORT}";
+        public string APP_PATH => $"https://{HOST_IP}:{HOST_PORT}";
 
-        public async static Task<bool> PingHost()
+        public async Task<bool> PingHost()
         {
             var pingable = false;
             Ping pinger = null;
@@ -39,7 +40,7 @@ namespace SimpleApi.WpfClient.Host
             return pingable;
         }
 
-        public async static Task<(bool,string)> SendMessage(string message)
+        public async Task<(bool,string)> SendMessage(string message)
         {
             var note = JsonConvert.SerializeObject(new { Message = message });
             var content = new StringContent(note, Encoding.UTF8, "application/json");

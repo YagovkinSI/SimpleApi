@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleApi.WpfClient.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,13 +10,13 @@ using System.Windows.Threading;
 
 namespace SimpleApi.WpfClient.AutoSend
 {
-    public static class AutoSendHelper
+    public class AutoSendService : IAutoSendService
     {
-        public static bool isAutoSendOn;
+        public bool isAutoSendOn;
 
-        private static string message = "Автоматическая отправка ранее не отправленных писем..." + Environment.NewLine;
+        private string message = "Автоматическая отправка ранее не отправленных писем..." + Environment.NewLine;
 
-        public static void Run(AutoSendObject autoSendObject)
+        public void Run(AutoSendObject autoSendObject)
         {
             if (isAutoSendOn)
                 return;
@@ -26,27 +27,15 @@ namespace SimpleApi.WpfClient.AutoSend
 
         }
 
-        private static void AutoSend(object obj)
+        private void AutoSend(object obj)
         {
             var autoSendObject = (AutoSendObject)obj;
             while(isAutoSendOn)
             {
                 autoSendObject.Dispatcher.Invoke(() => { autoSendObject.TbLog.Text += message; });
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
             }
         }
 
-    }
-
-    public class AutoSendObject
-    {
-        public Dispatcher Dispatcher;
-        public TextBlock TbLog;
-
-        public AutoSendObject(Dispatcher dispatcher, TextBlock tbLog)
-        {
-            Dispatcher = dispatcher;
-            TbLog = tbLog;
-        }
     }
 }
