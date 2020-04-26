@@ -9,7 +9,9 @@
 <body>
     <h2>Все сообщения:</h2>
     <a href="#" title="Обновить" class="btn btn-primary" onclick="window.location.reload();">Обновить (F5)</a>
-    <table class="table table-condensed table-striped  col-md-6">
+    
+    <div id="waitMessage">ЖДИТЕ... ИДЁТ ЗАГРУЗКА!</div>
+    <table id="noteList" class="table table-condensed table-striped  col-md-6" style="display: none">
         <thead>
             <tr>
                 <th>Дата</th>
@@ -65,10 +67,14 @@
             if (response.ok === true) {
                 const notes = await response.json();
                 let rows = document.querySelector("tbody"); 
+                let noteList = document.getElementById("noteList"); 
+                noteList.setAttribute("style", "display: block");
                 notes.forEach(note => {
                     // добавляем полученные элементы в таблицу
                     rows.append(row(note));
                 });
+                let waitMessage = document.getElementById("waitMessage"); 
+                waitMessage.setAttribute("style", "display: none");
             }
         }
 
