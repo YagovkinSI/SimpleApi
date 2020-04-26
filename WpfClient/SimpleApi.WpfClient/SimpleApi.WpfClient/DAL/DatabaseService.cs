@@ -26,25 +26,19 @@ namespace SimpleApi.WpfClient.DAL
             }
         } 
 
-        public async Task<long?> AddNote(string message)
+        public async Task<bool> AddNote(Note note)
         {
-            var note = new Note 
-            { 
-                Message = message,
-                CreateDate = DateTime.Now
-            };
-
             try
             {
                 DbContext.Notes.Add(note);
                 await DbContext.SaveChangesAsync();
-                return note.Id;
+                return true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка базы данных! Сообщение не сохранено и не отправлено!\r\n{ex.Message}", 
                     "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-                return null;
+                return false;
             }
         }
         public async void AddSending(long noteId, bool success, string response)
@@ -68,5 +62,21 @@ namespace SimpleApi.WpfClient.DAL
             }
         }
 
+        public async Task<Note[]> GetNotSendedNotes()
+        {
+            try
+            {
+                return await DbContext.Notes
+                    .Include(n => n.Sendings)
+                    .Where(n => n.Sendings.All(s => !s.Success))
+                    .ToArrayAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка базы данных! Не удалось считать неотрплавнные сообщения!\r\n{ex.Message}",
+                    "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                return new Note[0];
+            }
+        }
     }
 }

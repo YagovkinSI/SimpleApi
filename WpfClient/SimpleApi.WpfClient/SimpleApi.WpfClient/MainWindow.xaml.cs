@@ -1,4 +1,5 @@
 ﻿using SimpleApi.WpfClient.AutoSend;
+using SimpleApi.WpfClient.BLL;
 using SimpleApi.WpfClient.DAL;
 using SimpleApi.WpfClient.Host;
 using SimpleApi.WpfClient.Services;
@@ -27,23 +28,34 @@ namespace SimpleApi.WpfClient
     /// </summary>
     public partial class MainWindow : Window
     {
-        IDatabaseService databaseService = new DatabaseService();
-        IConnectionService connectionService = new ConnectionService();
-        IAutoSendService autoSendService = new AutoSendService();
+        private IDatabaseService databaseService;
+        private IConnectionService connectionService;
+        private IAutoSendService autoSendService;
+        private IMainAppService mainAppService;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            Generateservices();
+            CreateServices();
 
-            autoSendService.Run(new AutoSendObject(this.Dispatcher, tbLog));
+            mainAppService.Run();
         }
-        private void Generateservices()
+
+        private void CreateServices()
         {
+            databaseService = new DatabaseService();
             ServiceManager.SetService(databaseService);
+
+            connectionService = new ConnectionService();
             ServiceManager.SetService(connectionService);
-            ServiceManager.SetService(connectionService);
+
+            autoSendService = new AutoSendService();
+            ServiceManager.SetService(autoSendService);
+            autoSendService.Init(Dispatcher, tbLog);
+
+            mainAppService = new MainAppService();
+            ServiceManager.SetService(mainAppService);
         }
 
 
@@ -51,7 +63,9 @@ namespace SimpleApi.WpfClient
         {
             lHostConnect.Foreground = Brushes.Black;
             lHostConnect.Content = "Проверка соединения...";
+
             var ping = await connectionService.PingHost();
+
             lHostConnect.Content = ping ? "Соединение установлено" : "Нет соединения";
             lHostConnect.Foreground = ping ? Brushes.Green : Brushes.Red;
         }
@@ -60,12 +74,8 @@ namespace SimpleApi.WpfClient
         {
             var message = tbMessage.Text;
 
-            var noteId = await databaseService.AddNote(message);
-            if (!noteId.HasValue)
-                return;
+            var response = await mainAppService.SendMessageAsync(message);
 
-            (bool success, string response) = await connectionService.SendMessage(message);
-            databaseService.AddSending(noteId.Value, success, response);
             tbLog.Text += response + Environment.NewLine;
         }
     }

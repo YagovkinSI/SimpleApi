@@ -12,7 +12,7 @@ namespace SimpleApi.WpfClient.Services
 
         public static T GetService<T>()
         {
-            var service = services.FirstOrDefault(s => typeof(T) == s.GetType());
+            var service = services.FirstOrDefault(s => s.GetType().GetInterfaces().Contains(typeof(T)));
             return (T)service;
         }
 

@@ -16,8 +16,9 @@
             <TextBox x:Name="tbMessage" HorizontalAlignment="Stretch" Margin="0,25,0,0" VerticalAlignment="Top" Height="100"/>
             <Button Click="onSendClick" Content="Отправить" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,130,0,0" Width="150" />
         </Grid>
-        <Grid x:Name="logForm" Margin="20,220,20,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <TextBlock x:Name="tbLog" Background="AntiqueWhite" HorizontalAlignment="Stretch" Margin="0,25,0,0" VerticalAlignment="Top" Height="80"/>
-        </Grid>
+        <ScrollViewer x:Name="logForm" Margin="20,220,20,20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <TextBlock x:Name="tbLog" Background="AntiqueWhite" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </ScrollViewer>
     </Grid>
 </Window>
