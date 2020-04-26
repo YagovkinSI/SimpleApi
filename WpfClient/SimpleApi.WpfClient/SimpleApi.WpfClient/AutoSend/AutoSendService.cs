@@ -41,13 +41,13 @@ namespace SimpleApi.WpfClient.AutoSend
 
             if (notSendedNotes.Length > 0)
             {
-                AddLogFromAsync($"Имеются неотправленные сообщения с прошлых сессий (количество - {notSendedNotes.Length}).\r" +
-                    $"\tОни будут отправлены автоматически во время текущей сессии.", enLogType.Attantion);
+                AddLogFromAsync($"{Resource.HaveNotSendedMessage} (количество - {notSendedNotes.Length}).\r" +
+                    $"\t{Resource.AutoSendOn}", enLogType.Attantion);
                 TrySendNotes(notSendedNotes);
             }
             else
             {
-                AddLogFromAsync($"Неотправленных сообщений не имеется.", enLogType.Message);
+                AddLogFromAsync($"{Resource.NoNotSendedMessage}", enLogType.Message);
             }
         }
 
@@ -97,28 +97,26 @@ namespace SimpleApi.WpfClient.AutoSend
 
                 if (successSendNotes.Count == 0)
                 {
-                    var text = "Автоматическа отправка ранее не отрпавленых сообщений завершилась неудачно.\r";
+                    var text = $"{Resource.AutoSendFail}\r";
                     foreach (var error in errors)
                         text += $"\t{error}\r";
-                    text += "\tПовторная попытка автоматической отправки будет произведена позднее.";
                     AddLogFromAsync(text, enLogType.Attantion);
                 }
                 else
                 {
                     if (notSendedNoteCount == successSendNotes.Count)
                     {
-                        var text = "Автоматическа отправка ранее не отрпавленых сообщений завершилась успешно.\r" +
-                            "\tНеотправленных сообщений не имеется.";
+                        var text = $"{Resource.AutoSendSuccess}\r" +
+                            $"\t{Resource.NoNotSendedMessage}";
                         AddLogFromAsync(text, enLogType.Attantion);
                         isAutoSendOn = false;
                     }
                     else
                     {
-                        var text = "Автоматическа отправка ранее не отрпавленых сообщений завершилась частично успешно.\r" +
+                        var text = $"{Resource.AutoSendPartially}\r" +
                             $"\tУспещно отправлно: {successSendNotes.Count}/{notSendedNoteCount}";
                         foreach (var error in errors)
                             text += $"\t{error}\r";
-                        text += "\tПовторная попытка автоматической отправки будет произведена позднее.";
                         AddLogFromAsync(text, enLogType.Attantion);
                     }
                 }

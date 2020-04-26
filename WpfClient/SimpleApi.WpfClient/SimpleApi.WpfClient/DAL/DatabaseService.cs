@@ -37,7 +37,7 @@ namespace SimpleApi.WpfClient.DAL
             catch (Exception ex)
             {
                 return new AppActionResult(false, 
-                    $"Ошибка сохранения сообщения в локальную БД! Сообщение не отправлено!\r\t{ex.Message}");
+                    $"{Resource.DbErrorAddNote}\r\t{ex.Message}");
             }
         }
 
@@ -59,7 +59,7 @@ namespace SimpleApi.WpfClient.DAL
             catch (Exception ex)
             {
                 return new AppActionResult(false,
-                       $"Ошибка сохранения результата отправки в локальную БД! \r\t{ex.Message}");
+                       $"{Resource.DbErrorAddSending}\r\t{ex.Message}");
             }
         }
 
@@ -74,7 +74,7 @@ namespace SimpleApi.WpfClient.DAL
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка базы данных! Не удалось считать неотрплавнные сообщения!\r\t{ex.Message}",
+                MessageBox.Show($"{Resource.DbErrorGetNotSendedMessages}\r\t{ex.Message}",
                     "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
                 return new Note[0];
             }

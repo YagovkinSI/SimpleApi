@@ -159,6 +159,11 @@
     <Compile Include="Enums\enLogType.cs" />
     <Compile Include="Logger\LogElement.cs" />
     <Compile Include="Logger\LogService.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\AppActionResult.cs" />
     <Compile Include="Services\Interfaces\IAppWindow.cs" />
     <Compile Include="Services\Interfaces\IAutoSendService.cs" />
@@ -203,6 +208,10 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

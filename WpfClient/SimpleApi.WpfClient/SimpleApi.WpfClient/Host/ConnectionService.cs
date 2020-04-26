@@ -61,20 +61,20 @@ namespace SimpleApi.WpfClient.Host
                             else
                                 return new AppActionResult(false,
                                     $"Ошибка сохранения сообщения в северную БД.\r\t{result.Error}\r" +
-                                    $"\tПовторная попытка отправки будет произведена позднее автоматически.");
+                                    $"\t{Resource.AutoSendOn}");
                         }
                         catch
                         {
                             return new AppActionResult(false,
                                 $"Сервер вернул неизвестный формат результата операции:\r\t{response.Content}\r" +
-                                $"\tПовторная попытка отправки будет произведена позднее автоматически.");
+                                $"\t{Resource.AutoSendOn}");
                         }
                     }
                     else
                     {
                         return new AppActionResult(false,
                             $"Ошибка запроса: \r\t{response.Content}\r" +
-                            $"\tПовторная попытка отправки будет произведена позднее автоматически.");
+                            $"\t{Resource.AutoSendOn}");
                     }
                 }
             }
@@ -82,7 +82,7 @@ namespace SimpleApi.WpfClient.Host
             {
                 return new AppActionResult(false,
                     $"Ошибка приложения! Сообщение не отправлено!\r\t{ex.InnerException?.Message ?? ex.Message}\r" +
-                    $"\tПовторная попытка отправки будет произведена позднее автоматически.");
+                    $"\t{Resource.AutoSendOn}");
             }          
         }
     }
