@@ -5,19 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleApi.WpfClient"
         mc:Ignorable="d"
-        Title="SimpleApiClient" Height="375" Width="320.968">
+        Title="SimpleApiClient" Height="436.5" Width="757.468">
     <Grid>
-        <Grid x:Name="hostConnection" Margin="20,20,20,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="151*"/>
+            <ColumnDefinition Width="163*"/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="hostConnection" Margin="20,20,20,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Button Click="onHostCheckClick" Content="Проверка соединения" HorizontalAlignment="Right" Margin="0,0,0,0" VerticalAlignment="Top" Width="150" />
             <Label Content="" x:Name="lHostConnect" Foreground="Black"  HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top"/>
         </Grid>
-        <Grid x:Name="sendForm" Margin="20,60,20,0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <Grid x:Name="sendForm" Margin="20,60,20,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Label Content="Сообщение:" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
-            <TextBox x:Name="tbMessage" HorizontalAlignment="Stretch" Margin="0,25,0,0" VerticalAlignment="Top" Height="100"/>
-            <Button Click="onSendClick" Content="Отправить" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,130,0,0" Width="150" />
+            <ScrollViewer HorizontalAlignment="Stretch" Margin="0,25,0,0" VerticalAlignment="Top" Height="65"
+                HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
+                <TextBox x:Name="tbMessage" TextWrapping="Wrap" AcceptsReturn="True" />
+            </ScrollViewer>
+            <Button Click="onSendClick" Content="Отправить" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,100,0,0" Width="150" />
         </Grid>
-        <ScrollViewer x:Name="logForm" Margin="20,220,20,20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="logForm" Margin="20,200,20,20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
             <RichTextBox x:Name="tbLog" Background="AntiqueWhite" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </ScrollViewer>
     </Grid>

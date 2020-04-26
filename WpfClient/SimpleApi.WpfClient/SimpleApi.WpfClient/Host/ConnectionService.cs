@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.Net.Http;
-using SimpleApi.WpfClient.Host.ResponseModels;
 using Newtonsoft.Json;
 using SimpleApi.WpfClient.Services.Interfaces;
+using SimpleApi.WpfClient.Services;
 
 namespace SimpleApi.WpfClient.Host
 {
@@ -40,13 +40,11 @@ namespace SimpleApi.WpfClient.Host
             return pingable;
         }
 
-        public async Task<(bool,string)> SendMessage(string message)
+        public async Task<AppActionResult> SendMessage(string message)
         {
             var note = JsonConvert.SerializeObject(new { Message = message });
             var content = new StringContent(note, Encoding.UTF8, "application/json");
 
-            bool success;
-            string result;
             try
             {
                 using (var client = new HttpClient())
@@ -55,35 +53,37 @@ namespace SimpleApi.WpfClient.Host
                         await client.PostAsync(APP_PATH + "/api/notes", content);
                     if (response.IsSuccessStatusCode)
                     {
-                        ResponseNotePost responseNote;
                         try
                         {
-                            responseNote = await response.Content.ReadAsAsync<ResponseNotePost>();
-                            success = responseNote.Success;
-                            result = responseNote.Success
-                                ? "Сообщение отправлено и сохранено"
-                                : $"Ошибка сохранения сообщения в базу данных: {responseNote.Error}";
+                            var result = await response.Content.ReadAsAsync<AppActionResult>();
+                            if (result.Success)
+                                return result;
+                            else
+                                return new AppActionResult(false,
+                                    $"Ошибка сохранения сообщения в северную БД.\r\t{result.Error}\r" +
+                                    $"\tПовторная попытка отправки будет произведена позднее автоматически.");
                         }
                         catch
                         {
-                            success = false;
-                            result = $"Ошибка клиента (сервер вернул неизвестный формат): {response.Content}";
+                            return new AppActionResult(false,
+                                $"Сервер вернул неизвестный формат результата операции:\r\t{response.Content}\r" +
+                                $"\tПовторная попытка отправки будет произведена позднее автоматически.");
                         }
                     }
                     else
                     {
-                        success = false;
-                        result = $"Ошибка запроса: {response.StatusCode}";
+                        return new AppActionResult(false,
+                            $"Ошибка запроса: \r\t{response.Content}\r" +
+                            $"\tПовторная попытка отправки будет произведена позднее автоматически.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                success = false;
-                result = ex.InnerException?.Message ?? ex.Message;
-            }
-
-            return (success, result);            
+                return new AppActionResult(false,
+                    $"Ошибка приложения! Сообщение не отправлено!\r\t{ex.InnerException?.Message ?? ex.Message}\r" +
+                    $"\tПовторная попытка отправки будет произведена позднее автоматически.");
+            }          
         }
     }
 }

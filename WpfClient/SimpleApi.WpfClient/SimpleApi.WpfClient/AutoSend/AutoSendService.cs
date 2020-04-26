@@ -16,23 +16,46 @@ namespace SimpleApi.WpfClient.AutoSend
     public class AutoSendService : IAutoSendService
     {
         public bool isAutoSendOn;
-        
+
+        Dispatcher dispatcher;
         private AutoSendObject autoSendObject;
 
         IConnectionService connectionService;
         IDatabaseService databaseService;
+        ILogService logService;
 
-        public AutoSendService()
+        public AutoSendService(Dispatcher dispatcher)
+        {
+            this.dispatcher = dispatcher;
+        }
+
+        public async Task InitAsync()
         {
             connectionService = ServiceManager.GetService<IConnectionService>();
             databaseService = ServiceManager.GetService<IDatabaseService>();
+            logService = ServiceManager.GetService<ILogService>();
+            
+            autoSendObject = new AutoSendObject(dispatcher, logService);
+
+            var notSendedNotes = await databaseService.GetNotSendedNotes();
+
+            if (notSendedNotes.Length > 0)
+            {
+                AddLogFromAsync($"Имеются неотправленные сообщения с прошлых сессий (количество - {notSendedNotes.Length}).\r" +
+                    $"\tОни будут отправлены автоматически во время текущей сессии.", enLogType.Attantion);
+                TrySendNotes(notSendedNotes);
+            }
+            else
+            {
+                AddLogFromAsync($"Неотправленных сообщений не имеется.", enLogType.Message);
+            }
         }
 
-        public void Init(Dispatcher dispatcher)
+        private void AddLogFromAsync(string message, enLogType logType)
         {
-            var logService = ServiceManager.GetService<ILogService>();
-            autoSendObject = new AutoSendObject(dispatcher, logService);
-            
+            autoSendObject.Dispatcher.Invoke(() => {
+                autoSendObject.LogService.AddLog(message, logType);
+            });
         }
 
         public void TrySendNotes(params Note[] newNotSendedNotes)
@@ -47,43 +70,60 @@ namespace SimpleApi.WpfClient.AutoSend
             thread.Start(autoSendObject);
         }
 
-        public async Task Run(Task<Note[]> newNotSendedNotes)
-        {
-            TrySendNotes(await newNotSendedNotes);
-        }
-
         private void AutoSendAsync(object obj)
         {
             var autoSendObject = (AutoSendObject)obj;
             while(isAutoSendOn)
             {
-                var count = 0;
-                foreach(var note in autoSendObject.NotSendedNotes)
+                var notSendedNoteCount = autoSendObject.NotSendedNotes.Count;                
+
+                var errors = new List<string>();
+                var successSendNotes = new List<Note>();
+                foreach (var note in autoSendObject.NotSendedNotes)
                 {
-                    (var success, var response) = connectionService.SendMessage(note.Message).Result;
-                    databaseService.AddSending(note.Id, success, response);
+                    var resultSend = connectionService.SendMessage(note.Message).Result;
+                    if (!resultSend.Success && !errors.Contains(resultSend.Error))
+                        errors.Add(resultSend.Error);
 
-                    if (!success)
-                        return;
+                    var resultDb = databaseService.AddSending(note.Id, resultSend).Result;
+                    if (!resultDb.Success && !errors.Contains(resultDb.Error))
+                        errors.Add(resultDb.Error);
+
+                    if (resultSend.Success && resultDb.Success)                    
+                        successSendNotes.Add(note);                    
                 }
-                if (count > 0 && autoSendObject.NotSendedNotes.Count > 0)
-                    autoSendObject.Dispatcher.Invoke(() => { autoSendObject.LogService.AddLog(
-                        $"Часть ранее неотправленных сообщений успешно переданы на сервер.\r\nКоличество таких сообщений " +
-                        $"- {count}.\r\nОсталоне не передано - {autoSendObject.NotSendedNotes.Count}", enLogType.Attantion);
-                    });
 
+                autoSendObject.NotSendedNotes.RemoveAll(n => successSendNotes.Contains(n));
+
+                if (successSendNotes.Count == 0)
+                {
+                    var text = "Автоматическа отправка ранее не отрпавленых сообщений завершилась неудачно.\r";
+                    foreach (var error in errors)
+                        text += $"\t{error}\r";
+                    text += "\tПовторная попытка автоматической отправки будет произведена позднее.";
+                    AddLogFromAsync(text, enLogType.Attantion);
+                }
+                else
+                {
+                    if (notSendedNoteCount == successSendNotes.Count)
+                    {
+                        var text = "Автоматическа отправка ранее не отрпавленых сообщений завершилась успешно.\r" +
+                            "\tНеотправленных сообщений не имеется.";
+                        AddLogFromAsync(text, enLogType.Attantion);
+                        isAutoSendOn = false;
+                    }
+                    else
+                    {
+                        var text = "Автоматическа отправка ранее не отрпавленых сообщений завершилась частично успешно.\r" +
+                            $"\tУспещно отправлно: {successSendNotes.Count}/{notSendedNoteCount}";
+                        foreach (var error in errors)
+                            text += $"\t{error}\r";
+                        text += "\tПовторная попытка автоматической отправки будет произведена позднее.";
+                        AddLogFromAsync(text, enLogType.Attantion);
+                    }
+                }
                 Thread.Sleep(10000);
-
-                if (autoSendObject.NotSendedNotes.Count == 0)
-                {
-                    autoSendObject.Dispatcher.Invoke(() => {
-                        autoSendObject.LogService.AddLog(
-                            $"Все ранее неотправленные сообщения успешно переданы на сервер.", enLogType.Attantion);
-                    });
-                    isAutoSendOn = false;
-                }
             }
         }
-
     }
 }

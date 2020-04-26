@@ -154,17 +154,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ApplicationManager.cs" />
     <Compile Include="AutoSend\AutoSendObject.cs" />
-    <Compile Include="BLL\MainAppService.cs" />
     <Compile Include="Enums\enLogType.cs" />
     <Compile Include="Logger\LogElement.cs" />
     <Compile Include="Logger\LogService.cs" />
+    <Compile Include="Services\AppActionResult.cs" />
+    <Compile Include="Services\Interfaces\IAppWindow.cs" />
     <Compile Include="Services\Interfaces\IAutoSendService.cs" />
     <Compile Include="Services\Interfaces\IDatabaseService.cs" />
     <Compile Include="Services\Interfaces\IConnectionService.cs" />
     <Compile Include="Services\IAppService.cs" />
     <Compile Include="Services\Interfaces\ILogService.cs" />
-    <Compile Include="Services\Interfaces\IMainAppService.cs" />
     <Compile Include="Services\ServiceManager.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -180,7 +181,6 @@
     <Compile Include="DAL\Models\Note.cs" />
     <Compile Include="DAL\Models\Sending.cs" />
     <Compile Include="Host\ConnectionService.cs" />
-    <Compile Include="Host\ResponseModels\NoteResponsePost.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

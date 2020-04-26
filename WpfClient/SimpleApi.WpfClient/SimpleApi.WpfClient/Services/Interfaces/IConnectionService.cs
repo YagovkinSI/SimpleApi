@@ -10,6 +10,6 @@ namespace SimpleApi.WpfClient.Services.Interfaces
     public interface IConnectionService : IAppService
     {
         Task<bool> PingHost();
-        Task<(bool, string)> SendMessage(string message);
+        Task<AppActionResult> SendMessage(string message);
     }
 }

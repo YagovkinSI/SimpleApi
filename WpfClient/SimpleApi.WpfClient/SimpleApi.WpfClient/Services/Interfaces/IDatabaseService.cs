@@ -10,9 +10,9 @@ namespace SimpleApi.WpfClient.Services.Interfaces
 {
     public interface IDatabaseService : IAppService
     {
-        Task<bool> AddNote(Note message);
+        Task<AppActionResult> AddNote(Note message);
 
-        void AddSending(long noteId, bool success, string response);
+        Task<AppActionResult> AddSending(long noteId, AppActionResult actionResult);
 
         Task<Note[]> GetNotSendedNotes();
     }

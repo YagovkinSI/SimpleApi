@@ -9,6 +9,6 @@ namespace SimpleApi.WpfClient.Services.Interfaces
 {
     public interface ILogService : IAppService
     {
-        void AddLog(string response, enLogType message);
+        void AddLog(string message, enLogType type);
     }
 }

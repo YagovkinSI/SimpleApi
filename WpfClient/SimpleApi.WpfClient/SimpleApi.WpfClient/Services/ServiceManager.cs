@@ -20,6 +20,5 @@ namespace SimpleApi.WpfClient.Services
         {
             services.Add(service);
         }
-
     }
 }

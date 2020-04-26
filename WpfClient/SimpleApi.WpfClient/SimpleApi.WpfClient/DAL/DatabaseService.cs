@@ -26,22 +26,22 @@ namespace SimpleApi.WpfClient.DAL
             }
         } 
 
-        public async Task<bool> AddNote(Note note)
+        public async Task<AppActionResult> AddNote(Note note)
         {
             try
             {
                 DbContext.Notes.Add(note);
                 await DbContext.SaveChangesAsync();
-                return true;
+                return new AppActionResult(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка базы данных! Сообщение не сохранено и не отправлено!\r\n{ex.Message}", 
-                    "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-                return false;
+                return new AppActionResult(false, 
+                    $"Ошибка сохранения сообщения в локальную БД! Сообщение не отправлено!\r\t{ex.Message}");
             }
         }
-        public async void AddSending(long noteId, bool success, string response)
+
+        public async Task<AppActionResult> AddSending(long noteId, AppActionResult actionResult)
         {    
             try
             {
@@ -49,16 +49,17 @@ namespace SimpleApi.WpfClient.DAL
                 {
                     NoteId = noteId,
                     SendDate = DateTime.Now,
-                    Success = success,
-                    Error = success ? "" : response
+                    Success = actionResult.Success,
+                    Error = actionResult.Error
                 };
                 DbContext.Sendings.Add(sending);
                 await DbContext.SaveChangesAsync();
+                return new AppActionResult(true);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка базы данных! Не сохранен результат отвправи сообщения!\r\n{ex.Message}",
-                    "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                return new AppActionResult(false,
+                       $"Ошибка сохранения результата отправки в локальную БД! \r\t{ex.Message}");
             }
         }
 
@@ -73,7 +74,7 @@ namespace SimpleApi.WpfClient.DAL
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка базы данных! Не удалось считать неотрплавнные сообщения!\r\n{ex.Message}",
+                MessageBox.Show($"Ошибка базы данных! Не удалось считать неотрплавнные сообщения!\r\t{ex.Message}",
                     "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
                 return new Note[0];
             }

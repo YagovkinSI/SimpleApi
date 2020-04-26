@@ -1,9 +1,5 @@
-﻿using SimpleApi.WpfClient.AutoSend;
-using SimpleApi.WpfClient.BLL;
-using SimpleApi.WpfClient.DAL;
+﻿
 using SimpleApi.WpfClient.Enums;
-using SimpleApi.WpfClient.Host;
-using SimpleApi.WpfClient.Logger;
 using SimpleApi.WpfClient.Services;
 using SimpleApi.WpfClient.Services.Interfaces;
 using System;
@@ -28,44 +24,27 @@ namespace SimpleApi.WpfClient
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IAppWindow
     {
-        private IDatabaseService databaseService;
-        private IConnectionService connectionService;
-        private IAutoSendService autoSendService;
-        private IMainAppService mainAppService;
-        private ILogService logService;
+        public RichTextBox LogBox => tbLog;
+
+        private readonly IDatabaseService databaseService;
+        private readonly IConnectionService connectionService;
+        private readonly ILogService logService;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            CreateServices();
+            ApplicationManager.CreateServices(this);
+            ApplicationManager.InitServices();
 
-            mainAppService.Run();
+            databaseService = ServiceManager.GetService<IDatabaseService>();
+            connectionService = ServiceManager.GetService<IConnectionService>();
+            logService = ServiceManager.GetService<ILogService>();
         }
 
-        private void CreateServices()
-        {
-            databaseService = new DatabaseService();
-            ServiceManager.SetService(databaseService);
-
-            connectionService = new ConnectionService();
-            ServiceManager.SetService(connectionService);
-
-            autoSendService = new AutoSendService();
-            ServiceManager.SetService(autoSendService);
-            autoSendService.Init(Dispatcher);
-
-            mainAppService = new MainAppService();
-            ServiceManager.SetService(mainAppService);
-
-            logService = new LogService(tbLog);
-            ServiceManager.SetService(logService);
-        }
-
-
-        private async void onHostCheckClick(object sender, RoutedEventArgs e)
+        private async void UpdateConnectionState()
         {
             lHostConnect.Foreground = Brushes.Black;
             lHostConnect.Content = "Проверка соединения...";
@@ -76,13 +55,26 @@ namespace SimpleApi.WpfClient
             lHostConnect.Foreground = ping ? Brushes.Green : Brushes.Red;
         }
 
+        private async void SendNewMassage(string message)
+        {
+            var result = await ApplicationManager.SendNewMassageAsync(message);
+            var logText = result.Success
+                ? "Сообщение успешно доставлено."
+                : result.Error;
+            var logType = result.Success ? enLogType.Message : enLogType.Error;
+            logService.AddLog(logText, logType);
+        }
+
+        private void onHostCheckClick(object sender, RoutedEventArgs e)
+        {
+            UpdateConnectionState();
+        }
+
         private async void onSendClick(object sender, RoutedEventArgs e)
         {
             var message = tbMessage.Text;
+            SendNewMassage(message);
 
-            (var success, var response) = await mainAppService.SendMessageAsync(message);
-
-            logService.AddLog(response, enLogType.Message);
         }
     }
 }

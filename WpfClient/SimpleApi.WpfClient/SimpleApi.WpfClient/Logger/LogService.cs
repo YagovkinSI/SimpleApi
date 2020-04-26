@@ -30,7 +30,7 @@ namespace SimpleApi.WpfClient.Logger
         {
             var textRange = new TextRange(textBox.Document.ContentEnd, textBox.Document.ContentEnd)
             {
-                Text = $"{logElement.Date.ToShortTimeString()}: {logElement.Message}\r\n"
+                Text = $"{logElement.Date.ToShortTimeString()}: \t{logElement.Message}\r"
             };
             switch (logElement.LogType)
             {
